@@ -78,4 +78,4 @@ data.yaml      dataset config for training
 
 ## Team
 
-[NAME 1] and [NAME 2], [COLLEGE]
+Gaurav Raturi and Yogesh Gautam, Gurugram University
