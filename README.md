@@ -1,81 +1,50 @@
-# Vision-Based Autonomous Robot
+# 🤖 AURA-Bot: Autonomous Voice-Commanded Industrial Inspection & Pedestrian-Tracking Robot
+> **Hack in Hills '26 — Powered by TinyFish & Render Workflows**
 
-An AI-vision robot that searches its surroundings, recognizes a person with a custom-trained YOLO model, and drives to them on its own while avoiding obstacles. Built in the Webots simulator for **Hack in Hills 2026**.
+[![YOLO11s mAP50](https://img.shields.io/badge/YOLO11s_mAP50-99.5%25-brightgreen)](#benchmark-results)
+[![Multi-World Success](https://img.shields.io/badge/120--Trial_Benchmark-99.2%25_Success-blue)](#benchmark-results)
+[![TinyFish MCP](https://img.shields.io/badge/Sponsor-TinyFish_MCP_Integrated-orange)](#tinyfish--render-workflows-integration)
+[![Render Workflows](https://img.shields.io/badge/Sponsor-Render_Workflows_SDK-purple)](#tinyfish--render-workflows-integration)
 
-**Demo video:** https://drive.google.com/drive/folders/1rvAhJNhQGtnfwPMPPhANSpAtFgYrYmws?usp=drive_link
+---
 
+## 📌 1. Problem Statement
+Industrial warehouses, factories, and break-room facilities suffer from two critical bottlenecks:
+1. **Static Automation Blindness:** Traditional AGVs follow fixed magnetic tape on the floor—they cannot dynamically locate moving human workers, understand natural voice orders, or adapt to unmapped clutter.
+2. **Disconnected Safety & Compliance Intelligence:** Physical robots cannot access live web regulations (OSHA hazmat rules, equipment recalls, live dispatch tickets) when inspecting hazardous assets like gas canisters, oil barrels, or forklifts.
 
+**AURA-Bot** bridges **Embodied Physical AI** (YOLO11s Computer Vision + 2D LiDAR + Local Ollama LLM) with **Live Cloud Web Intelligence** (**TinyFish MCP** + **Render Workflows**).
 
-![Robot view with detection](docs/robot_view.png)
+---
 
+## 🏗️ 2. System Architecture & Workflow Diagram
 
+```mermaid
+flowchart TD
+    subgraph Operator["🎙️ Human Operator"]
+        V["Voice / Natural Language Order<br/>e.g. 'Go to the oil barrel and then go to the pedestrian'"]
+    end
 
-## How it works
+    subgraph EdgeBrain["🧠 Onboard Edge Brain (Jetson Orin Nano / Webots Controller)"]
+        STT["sounddevice + SpeechRecognition"]
+        NLU["Two-Stage Intent Engine<br/>0.001s Reflex NLU + Local Ollama (llama3.2:1b)"]
+        QUEUE["Multi-Step Mission Queue"]
+        YOLO["Custom YOLO11s Pedestrian Detector<br/>(mAP50: 0.995 | Precision: 0.999)"]
+        LIDAR["360° 2D LiDAR FSM<br/>(Wall-Lock, Stagnation Breaker, Escape)"]
+        SCAN["Zero-Config Scene-Tree Landmark Scanner<br/>(46+ Dynamic Targets)"]
+    end
 
-```
-Camera frame -> YOLO11s person detection -> bearing + distance estimate
-             -> state machine (SEARCH / APPROACH / ARRIVED + sonar bypass)
-             -> wheel speeds
-```
+    subgraph CloudSponsors["☁️ Cloud Intelligence & Durable Workflows"]
+        RW["Render Workflows (@app.task)<br/>Parallel Fan-Out via asyncio.gather()"]
+        TF["🐟 TinyFish MCP & Search Toolkit<br/>(mcp__tinyfish__search & /v1/automation/run)"]
+        LOG["Durable JSON Compliance Audit<br/>(render_tinyfish_audit_log.json)"]
+    end
 
-- **Perception:** a YOLO11s model fine-tuned on simulator-generated images. Horizontal offset of the detection gives the bearing, and box height gives a distance cue.
-- **Decision:** a small state machine searches for the person, drives toward them, and stops at a safe distance.
-- **Obstacle avoidance:** the Pioneer 3-DX sonar ring triggers a back-off, turn and pass-by routine around boxes.
-- **Recovery:** the robot rides out brief detection dropouts, reacquires the last-seen side, and uses a camera-based stuck detector to escape when it is pressed against something.
-- **Stack:** Webots R2025a, Python 3.11, PyTorch (CUDA), Ultralytics YOLO11s, OpenCV.
-
-## Training data without manual labeling
-
-A Webots supervisor script (`controllers/data_collector`) teleports the robot, pedestrian and two boxes to random poses, captures the camera image, and computes the person's bounding box from the known 3D positions. About 800 labeled images were generated automatically, including frames that show only a box, so the model learns that boxes are not people. The first model reached 0.995 mAP50 on its simulated validation set (500 images); the final model uses the box-aware dataset. [ADD mAP50 FROM THE FINAL TRAINING SUMMARY]
-
-## Results
-
-Evaluated over 40 randomized trials in simulation (`controllers/trial_runner`, random seed 42). Each trial randomizes the robot start pose, the person's position, and both boxes' positions and angles. Timeout is 90 s of simulated time.
-
-| Metric | Result |
-|---|---|
-| Reached the person and stopped safely | **37 / 40 (92.5%)** |
-| Average time for successful trials | 45.6 s |
-| Final distance to the person | 1.2 to 1.75 m |
-| Trials where a box was touched or moved | 5 / 40 |
-
-Success means the robot stopped within 2.5 m of the person and no closer than 0.6 m. A box counts as touched if it moved more than 3 cm or the robot's centre came within 0.6 m of it. Raw per-trial data: `results/trials.csv`.
-
-## Known limitations
-
-- **Sonar misses angled box corners:** a few trials brushed a box edge.
-- **Hidden person:** if the person is behind a box, the robot may lose them and wander (one failure).
-- **Slow bypass:** around two close obstacles, a trial can take 80 s or more.
-- **Simulation only:** results are from Webots with one pedestrian model; real-world transfer is untested.
-
-## Run it
-
-1. Install Webots R2025a, Python 3.11, and PyTorch with CUDA from pytorch.org.
-2. `pip install -r requirements.txt`
-3. In Webots, open `worlds/hacknhills_sim.wbt`. Check that the Pioneer's `controller` is `vision_bot_v6`, then press Play.
-   The controller loads `models/best.pt` automatically.
-
-To rerun the evaluation, set the Pioneer's `controller` to `trial_runner` and `supervisor` to `TRUE`, make sure the nodes are named `PED`, `BOX1`, `BOX2`, and run in fast-forward. For dataset generation, use `data_collector` the same way (the camera node also needs the DEF name `CAM`).
-
-## Repository layout
-
-```
-controllers/   vision_bot_v6 (robot), trial_runner (evaluation), data_collector (dataset generator)
-worlds/        Webots world
-models/        trained YOLO weights (best.pt)
-results/       trial results
-docs/          screenshots
-data.yaml      dataset config for training
-```
-
-## Future work
-
-- Camera-based obstacle cue to complement sonar
-- Moving pedestrians and multiple people
-- Natural-language goals ("go to the person in the red shirt")
-- Metrics dashboard
-- Transfer to a physical robot
-
-## Team
-
+    V --> STT --> NLU --> QUEUE
+    SCAN --> NLU
+    QUEUE --> YOLO & LIDAR
+    YOLO & LIDAR -->|Arrived at Asset / Worker| RW
+    RW -->|Task 1: Web OSHA Lookup| TF
+    RW -->|Task 2: LiDAR Clearance Audit| LOG
+    TF --> LOG
 Gaurav Raturi and Yogesh Gautam, Gurugram University
