@@ -43,7 +43,7 @@ flowchart TD
 
 ---
 
-## 🔌 3. Hardware Components, Specifications & Circuit Connections (FAQ #4 Compliance)
+## 🔌 3. Hardware Components, Specifications & Circuit Connections 
 
 While demonstrated in **Webots R2025a** physics simulation across 3 full-scale worlds, AURA-Fleet maps 1:1 to physical hardware:
 
