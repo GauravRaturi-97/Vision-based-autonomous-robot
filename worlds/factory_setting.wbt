@@ -1,0 +1,110 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/appearances/protos/Parquetry.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/factory/containers/protos/WoodenBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/factory/forklift/protos/Forklift.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/factory/gas_canister/protos/GasCanister.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/factory/manhole/protos/SquareManhole.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/adept/pioneer3/protos/Pioneer3dx.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/devices/hokuyo/protos/HokuyoUrg04lx.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/humans/pedestrian/protos/Pedestrian.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation -0.1898534242804924 -0.31856277581250575 0.9286944789087543 5.142124914083752
+  position -5.4577097695729675 9.60265645925577 5.0306685448442
+}
+TexturedBackground {
+  texture "factory"
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 10 10
+  floorAppearance Parquetry {
+    type "dark strip"
+  }
+}
+DEF PED Pedestrian {
+  translation 1.9632834240189572 -0.3321155677729386 1.27
+  rotation 0 0 1 -3.1271592035361713
+}
+DEF ROBOT Pioneer3dx {
+  hidden position_0_0 -5.96526803703282
+  hidden position_0_1 1667.1120872920108
+  hidden position_0_2 2709.1987579061356
+  hidden linearVelocity_0 0.2576904896069642 0.14159967107237573 6.222300637335186e-05
+  hidden angularVelocity_0 -0.0005692938174295394 0.002442755842288879 -0.33789946628987305
+  hidden rotation_1 0.6824680070898059 -0.5168352877949736 -0.5168352780033069 1.9438678296612284
+  hidden position_1_0 -9873.151104653667
+  hidden linearVelocity_1 0.2376118843769237 0.18414139738485444 0.0003807279087268256
+  hidden angularVelocity_1 0.010996210875407239 0.007543970153315992 -0.717010716834344
+  hidden rotation_2 1 0 0 4.016198232642879
+  hidden linearVelocity_2 0.23359333350175226 0.18967281637288735 0.00038018029680182924
+  hidden angularVelocity_2 -5.199017943499062 6.046615951622605 -0.90321735125721
+  hidden rotation_4 0.6907826196587682 -0.6907826731248202 0.21363209236418046 3.562529246201607
+  hidden linearVelocity_4 0.31652464866207297 0.1466365192304632 3.5212287097860704e-06
+  hidden angularVelocity_4 -1.4963270270420899 3.2310899727350444 -0.35661771573437556
+  hidden rotation_9 0.20352411523673933 -0.2035241838834919 0.9576825366955696 4.6691635566444205
+  hidden linearVelocity_9 0.21489612293602772 0.10048145303645413 -0.00015315621991100347
+  hidden angularVelocity_9 -1.0262796744207126 2.218335697318035 -0.3438177981716165
+  translation -2.7060182642382884 -1.8234457454531736 0.09473559117894002
+  rotation 0.015860744722985355 -0.07852609484784821 0.9967858793165054 0.42955878213417364
+  controller "trial_runner_factory"
+  supervisor TRUE
+  extensionSlot [
+    DEF lidar HokuyoUrg04lx {
+      translation 0.1 0 0.15
+      name "lidar"
+    }
+    DEF CAM Camera {
+      translation 0 0 0.4
+      fieldOfView 1.2
+      width 640
+      height 640
+    }
+  ]
+}
+WoodenBox {
+}
+DEF BOX1 WoodenBox {
+  translation -0.7666639163191389 -0.015037269658643382 0.2
+  rotation 0 0 1 -0.4959063966149361
+  name "BOX1"
+}
+WoodenBox {
+  translation 0.96 0 0.3
+  name "wooden box(2)"
+}
+DEF BOX2 WoodenBox {
+  translation 1.0712988029858044 -0.2847040568417545 0.2
+  rotation 0 0 1 -0.08105349887467206
+  name "BOX2"
+}
+WoodenBox {
+  translation -0.01 0 0.94
+  name "wooden box(4)"
+}
+Forklift {
+  translation -2.18346 -4.09 0.748312
+  rotation 2.62068e-15 -1 1.8428e-15 0.0199968
+  enablePhysics FALSE
+}
+GasCanister {
+  translation -2.6334417785969793e-10 4.77 -0.029429999999988077
+  rotation -4.733462957675861e-11 1 -7.262518409503215e-12 9.260292370810933e-07
+  enablePhysics FALSE
+}
+GasCanister {
+  translation -0.49000000046359604 4.77 -0.029429999999976086
+  rotation -1.306204143320078e-11 1 -4.902541099704253e-11 1.6301734253376808e-06
+  name "gas canister(1)"
+  enablePhysics FALSE
+}
+SquareManhole {
+  translation -2.09 3.32 0
+}

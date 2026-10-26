@@ -1,0 +1,54 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/adept/pioneer3/protos/Pioneer3dx.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/humans/pedestrian/protos/Pedestrian.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/factory/containers/protos/CardboardBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/devices/hokuyo/protos/HokuyoUrg04lx.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation -0.42083039458440474 0.17505908051383254 0.8900876908055665 2.432376877650755
+  position 5.777782149911749 -5.381813575559616 8.764064009662695
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 6 6
+}
+DEF BOX2 CardboardBox {
+  translation 0.6836945696677688 0.11559579631592831 0.2
+  rotation 0 0 1 -0.30127454251742514
+  name "cardboard box(1)"
+}
+DEF BOX1 CardboardBox {
+  translation -0.38999055828422713 -0.05528179660359733 0.2
+  rotation 0 0 1 0.245576385662315
+}
+DEF PED Pedestrian {
+  translation 2.5 0.3513909242589852 1.27
+  rotation 0 0 1 3.141592653589793
+}
+DEF ROBOT Pioneer3dx {
+  translation 1.1501939160297283 -0.6590354795733199 0.0947198434914186
+  rotation 0.016922282162267394 -0.05141045287868132 0.9985342266047916 0.6359942899043531
+  controller "trial_runner_v8"
+  supervisor TRUE
+  extensionSlot [
+    DEF lidar HokuyoUrg04lx {
+      translation 0.1 0 0.15
+      name "lidar"
+    }
+    DEF CAM Camera {
+      translation 0 0 0.4
+      fieldOfView 1.2
+      width 640
+      height 640
+    }
+  ]
+}
