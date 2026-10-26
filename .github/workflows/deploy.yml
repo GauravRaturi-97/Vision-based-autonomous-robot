@@ -1,0 +1,55 @@
+name: CI/CD Pipeline & Render Deploy Hook
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  validate-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Syntax & Compilation Check
+        run: |
+          python -m py_compile main.py
+          python -m py_compile controllers/vision_bot_olama/core_web_app.py
+          python -m py_compile controllers/vision_bot_olama/vision_bot_olama.py
+          python -m py_compile controllers/vision_bot_olama/personas/cafe_barista.py
+          python -m py_compile controllers/vision_bot_olama/personas/factory_safety.py
+          python -m py_compile controllers/vision_bot_olama/personas/warehouse_logistics.py
+          python -m py_compile controllers/vision_bot_olama/personas/hospital_nurse.py
+
+      - name: Run Domain Persona Unit Tests
+        run: |
+          pytest tests/ -v
+
+  deploy-render:
+    needs: validate-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Render Deploy Hook
+        if: env.RENDER_DEPLOY_HOOK_URL != ''
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          echo "Triggering automated deployment on Render..."
+          curl -f -X POST "$RENDER_DEPLOY_HOOK_URL"
